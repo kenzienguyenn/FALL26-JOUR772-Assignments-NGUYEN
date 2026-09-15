@@ -1,6 +1,6 @@
 ---
 title: "pre_lab_01.Rmd"
-author: "Derek Willis"
+author: "Kenzie Nguyen"
 date: "2025-01-15"
 output: html_document
 ---
@@ -175,7 +175,7 @@ umd_courses |>
 
 Compared to the previous codeblock, how did the output change and what in the code changed it?
 
-**Answer:**
+**Answer: compared to the previous codeblock, the code in this block changed the output by categorizing our data by the department and term rather than just the term; it's also in alphabetical order instead of numerical**
 
 ### Task 12: Other summary functions
 
@@ -193,7 +193,7 @@ umd_courses |>
 
 Compared to the previous codeblock, what has changed and how did that affect the result?
 
-**Answer:**
+**Answer: in this block, two additional columns were created that calculated the total number of classes taught and seats available per term; and the dataset was arranged by the largest amount of seats to the least**
 
 ### Task 13: different kinds of summarizations
 
@@ -211,7 +211,9 @@ umd_courses |>
   arrange(desc(total_seats))
 ```
 
-Compared to the previous codeblock, what has changed and how did that affect the result? What do the top terms have in common? **Answer**
+Compared to the previous codeblock, what has changed and how did that affect the result? What do the top terms have in common?
+
+**Answer: in this block, that data is arranged to reflect certain statistics within each term: the number of classes, total amount of seats, the average number of seats, and the median number of seats. the top terms share the same term months (august and january).**
 
 ### Task 14: more aggregations
 
@@ -225,15 +227,15 @@ umd_courses |>
     total_seats = sum(seats),
     mean_seats = mean(seats),
     median_seats = median(seats),
-    # add minimum seats here
-    # add maximum seats here
+    min_seats = min(seats),
+    max_seats = max(seats)
   ) |>
   arrange(desc(total_seats))
 ```
 
 Compared to the previous codeblock, what has changed and how did that affect the result? How is the data sorted?
 
-**Answer**
+**Answer: in this codeblock, two columns were added to calculate the maximum and minimum number of seats per department, which resulted in two columns being added to the resulting dataset**
 
 ### Task 12: Questions
 
@@ -241,8 +243,8 @@ No code here; I want you to provide three questions that this data suggests to y
 
 **Answer**
 
-1.  
+1.  Are there departments that offer more classes in the winter and summer terms than most?
 
-2.  
+2.  Why do some departments have a higher average total of seats than others?
 
-3.  
+3.  Why are the maximum amount of seats higher than total number of classes across most departments?

@@ -71,7 +71,7 @@ fall_24 <- umd_courses |>
   wes_moore <- maryland_expenses |>
     mutate(expenditure_date = mdy(expenditure_date)) |>
     mutate(month = floor_date(expenditure_date, "month")) |>
-    filter(payee_type == "Candidate Committee" & str_detect(committee_name, "Wes For")) |>
+    filter(str_detect(committee_name, "Wes For")) |>
     select(payee_type, committee_name, month, amount) |>
     group_by(month) |>
     summarize(total_donations = sum(amount)) |>
@@ -86,27 +86,17 @@ fall_24 <- umd_courses |>
 
 in_out_spending <- maryland_expenses |> 
   mutate(
-    state = case_when(
-      str_detect(address, " Maryland ") ~ "MD",
-      str_detect(address, " California ") ~ "CA",
-      str_detect(address, " Washington ") ~ "WA",
-      str_detect(address, " Louisiana ") ~ "LA",
-      str_detect(address, " Florida ") ~ "FL",
-      str_detect(address, " North Carolina ") ~ "NC",
-      str_detect(address, " Massachusetts ") ~ "MA",
-      str_detect(address, " West Virginia ") ~ "WV",
-      str_detect(address, " Virginia ") ~ "VA",
+    spending_location = case_when(
+      str_detect(address, " Maryland ") ~ "in",
+      str_detect(address, " California ") ~ "out",
+      str_detect(address, " Washington ") ~ "out",
+      str_detect(address, " Louisiana ") ~ "out",
+      str_detect(address, " Florida ") ~ "out",
+      str_detect(address, " North Carolina ") ~ "out",
+      str_detect(address, " Massachusetts ") ~ "out",
+      str_detect(address, " West Virginia ") ~ "out",
+      str_detect(address, " Virginia ") ~ "out",
       .default = NA)) |> 
-  mutate(spending_location = case_when(
-    str_detect(state, "MD") ~ "in",
-    str_detect(state, "CA") ~ "out",
-    str_detect(state, "WA") ~ "out", 
-    str_detect(state, "LA") ~ "out",
-    str_detect(state, "FL") ~ "out",
-    str_detect(state, "MA") ~ "out", 
-    str_detect(state, "WV") ~ "out", 
-    str_detect(state, "VA") ~ "out",
-    str_detect(state, "NA") ~ "NA")) |>
   group_by(spending_location) |>
   summarize(total_amount = n())
 ```

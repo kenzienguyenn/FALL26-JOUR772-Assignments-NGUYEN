@@ -283,7 +283,7 @@ cleaned_md_grants_loans
 
 **Task** Write and run code to answer our original question: which zip code has gotten the most amount of money from the Maryland Tourism Board? Where is that zip code, and does that zip code make sense to you as the top recipient? Write a sentence describing the top result.
 
-**Answer: 20745 got the most from the Maryland Tourism Board, which makes sense to me as the location is Oxon Hill, MD a city that's located alongside the Potomac River**
+**Answer: 21202 got the most from the Maryland Tourism Board, which makes sense to me as the location is Baltimore, MD the biggest city in Maryland that attracts a lot of tourists**
 
 ```{r}
 

@@ -1,0 +1,97 @@
+---
+title: "2024_EAVS_UOCAVA"
+output: html_document
+date: "2026-10-07"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
+library(janitor)
+```
+
+## UOCAVA 2024 Data 
+
+NOTES:
+
+I created a dataset based on the Excel spreadsheet provided and then created a new column that calculated the rejection rate by county. A "NaN" value is showing up in the percentage column — idk what that is.
+
+```{r}
+
+uocava_2024 <- read_csv("eavs_2024_public_records.csv") 
+
+uni_2024_voting <- uocava_2024 |> 
+  clean_names() |>
+  rename(ballots_cast = b11b, 
+         ballots_rejected = b24b) |> 
+  select(jurisdiction_name, state_abbr, ballots_cast, ballots_rejected) |> 
+  mutate(across(everything(), ~ if_else(str_detect(.x, "Data not available"), NA, .x))) |> 
+  mutate(across(everything(), ~ if_else(str_detect(.x, "Valid skip"), NA, .x))) |> 
+  mutate(ballots_cast = as.numeric(ballots_cast), ballots_rejected = as.numeric(ballots_rejected)) |> 
+  drop_na(ballots_cast, ballots_rejected) |> 
+  mutate(pct_2024_rejected = (ballots_rejected/ballots_cast)*100)
+```
+
+NOTE: Arranged to see the top rejections by county (Bell County, TX has a high rejection rate of 13.13%)
+
+```{r}
+
+uni_2024_voting |> 
+  arrange(desc(ballots_rejected))
+```
+
+## UOCAVA 2022 Data 
+
+NOTES:
+
+Basically did the same thing as above expect with 2022 EAVS data.
+
+```{r}
+
+uocava_2022 <- read_csv("eavs_2022_records.csv") 
+
+uni_2022_voting <- uocava_2022 |> 
+  clean_names() |>
+  rename(ballots_cast = b9b, 
+         ballots_rejected = b18b) |> 
+  select(jurisdiction_name, state_abbr, ballots_cast, ballots_rejected) |> 
+  mutate(across(everything(), ~ if_else(.x == -99, NA, .x))) |> 
+  mutate(across(everything(), ~ if_else(.x == -88, NA, .x))) |> 
+  mutate(across(everything(), ~ if_else(.x == -77, NA, .x))) |> 
+  mutate(ballots_cast = as.numeric(ballots_cast), ballots_rejected = as.numeric(ballots_rejected)) |> 
+  drop_na(ballots_cast, ballots_rejected) |> 
+  mutate(pct_2022_rejected = (ballots_rejected/ballots_cast)*100)
+```
+
+```{r}
+
+uni_2022_voting |> 
+  arrange(desc(ballots_rejected))
+```
+
+## UOCAVA 2020 Data 
+
+```{r}
+
+uocava_2020 <- read_csv("eavs_2020_records.csv") 
+
+uni_2020_voting <- uocava_2020 |> 
+  clean_names() |>
+  rename(ballots_cast = b9b, 
+         ballots_rejected = b18b) |> 
+  select(jurisdiction_name, state_abbr, ballots_cast, ballots_rejected) |> 
+  mutate(across(everything(), ~ if_else(.x == -99, NA, .x))) |> 
+  mutate(across(everything(), ~ if_else(.x == -88, NA, .x))) |> 
+  mutate(across(everything(), ~ if_else(.x == -77, NA, .x))) |> 
+  mutate(ballots_cast = as.numeric(ballots_cast), ballots_rejected = as.numeric(ballots_rejected)) |> 
+  drop_na(ballots_cast, ballots_rejected) |> 
+  mutate(pct_2020_rejected = (ballots_rejected/ballots_cast)*100)
+```
+
+```{r}
+
+
+uni_2020_voting |> 
+  arrange(desc(ballots_rejected)) 
+```

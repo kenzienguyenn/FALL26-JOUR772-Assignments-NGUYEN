@@ -247,4 +247,4 @@ No code here; I want you to provide three questions that this data suggests to y
 
 2.  Why do some departments have a higher average total of seats than others?
 
-3.  Why are the maximum amount of seats higher than total number of classes across most departments?
+3.  How many courses only have 1 section?

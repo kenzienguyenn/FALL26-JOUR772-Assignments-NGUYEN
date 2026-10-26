@@ -1,0 +1,159 @@
+---
+title: "Reverse Engineering Project"
+author: "Jazmyn Gray, Kalilu Jawara, Kenzie Nguyen and Taylor Ramirez"
+date: "Date here"
+output:
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction 
+
+In this notebook, we are reverse engineering the story, [STORY NAME](STORY URL)
+
+## Load libraries
+
+Loading required libraries for this analysis.
+
+```{r echo=FALSE, message=FALSE}
+
+library(tidyverse)
+library(janitor)
+library(dplyr)
+library(lubridate)
+
+```
+
+## Load and Cleaning Data
+
+In this section, describe the source of the data, write a basic data dictionary for data you are working with, and discuss any caveats or issues you discovered working with this data. 
+
+```{r}
+# Loading required datasets and cleaning them 
+age_pop <- read_csv("data/population-by-age.csv") |> 
+  clean_names()
+
+private_enrollment <- read_csv("data/private-enrollment-by-grade.csv") |> 
+  clean_names() |> 
+# Renaming so that we can join later 
+  rename(state_abbr = "state") |> 
+  rename(private_enrollment = "enrollment")
+
+public_enrollment <- read.csv("data/public-enrollment-by-grade.csv") |> 
+  clean_names() |> 
+# Renaming so that we can join later 
+  rename(state_abbr = "st") |> 
+  rename(public_enrollment = "enrollment")
+
+# Creating a new combined dataset to analyze enrollment rates later 
+school_story <- public_enrollment |> 
+  full_join(private_enrollment, join_by(fips, sch_year, grade, state_abbr)) |> 
+# Filtering down to the states that the AP analyzed 
+  filter(fips == c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12))
+
+
+```
+
+## Sentences to Engineer
+In this notebook, we are reverse engineering five sentences from the story.
+
+### Sentence 1
+
+* **Sentence text**: “The population of school-age kids in the states we studied fell by about 183,000, according to census estimates.” 
+
+* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+
+```{r}
+
+# Creating new dataset to focus on estimated school-age population in 2020 in the respective jurisdiction 
+age_2020_pop <- age_pop |> 
+# Creating new columns based on the est_date column
+  mutate(year = year(est_date), month = month(est_date)) |> 
+# Filtering down to April 2020 to match the AP estimated start date for school-age population
+  filter(year == 2020 & month == 4) |>
+# Filtering to match the states that the AP examined 
+  filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12)) |> 
+# Calculating the total school-age population in April 2020 per state 
+  group_by(state) |> 
+  summarise(total_pop_2020 = sum(population))
+
+# Creating new dataset to focus on estimated school-age population in 2021 in the respective jurisdiction 
+age_2021_pop <- age_pop |> 
+# Creating new columns based on the est_date column
+  mutate(year = year(est_date), month = month(est_date)) |> 
+# Filtering down to July 2021 to match the AP estimated start date for school-age population
+  filter(year == 2021 & month == 7) |>
+# Filtering to match the states that the AP examined 
+  filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12)) |> 
+# Calculating the total school-age population in July 2021 per state 
+  group_by(state) |> 
+  summarise(total_pop_2021 = sum(population))
+
+# Creating official dataset for sentence #1 analysis 
+combo_age_year <- age_2021_pop |> 
+  left_join(age_2020_pop, join_by(state)) |> 
+# Calculating the school-age population difference between 2020-2021 per state 
+  mutate(difference = total_pop_2020 - total_pop_2021) |> 
+# Finding the overall difference (the number that the AP got that is shown in the Missing Kids Summary spreadsheet)
+  summarise(total_difference = sum(difference))
+  
+```
+
+### Sentence 2
+
+* **Sentence text**: [Paste in sentence to engineer here]
+* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+
+```{r}
+# Put code to reverse engineer sentence here
+
+# Display results of code below this codeblock
+
+```
+
+### Sentence 3
+
+* **Sentence text**: [Paste in sentence to engineer here]
+* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+
+```{r}
+# Put code to reverse engineer sentence here
+
+# Display results of code below this codeblock
+
+```
+
+### Sentence 4
+
+* **Sentence text**: [Paste in sentence to engineer here]
+* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+
+```{r}
+# Put code to reverse engineer sentence here
+
+# Display results of code below this codeblock
+
+```
+
+### Sentence 5
+
+* **Sentence text**: [Paste in sentence to engineer here]
+* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+
+```{r}
+# Put code to reverse engineer sentence here
+
+# Display results of code below this codeblock
+
+```
+
+-30-

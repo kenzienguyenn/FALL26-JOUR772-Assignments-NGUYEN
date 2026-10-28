@@ -58,7 +58,8 @@ public_enrollment <- read.csv("data/public-enrollment-by-grade.csv") |>
 school_story <- public_enrollment |> 
   full_join(private_enrollment, join_by(fips, sch_year, grade, state_abbr)) |> 
 # Filtering down to the states that the AP analyzed 
-  filter(fips == c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12))
+  filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12))
+
 
 
 ```
@@ -70,7 +71,7 @@ In this notebook, we are reverse engineering five sentences from the story.
 
 * **Sentence text**: “The population of school-age kids in the states we studied fell by about 183,000, according to census estimates.” 
 
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Analysis summary**: Our results confirmed the AP's claim stating that the population of school-age kids in the 22 states studied fell by about 183,000. We found this number by finding the difference between the provided age and population data from July 2020 to the age and population data we have from July 2021.
 
 ```{r}
 

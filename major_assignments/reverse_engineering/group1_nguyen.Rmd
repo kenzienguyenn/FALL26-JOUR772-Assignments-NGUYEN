@@ -111,7 +111,7 @@ combo_age_year <- age_2021_pop |>
 
 ### Sentence 2
 
-* **Sentence text**: [Paste in sentence to engineer here]
+* **Sentence text**: “Those states saw private-school enrollment grow by over 100,000 students." 
 * **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
 
 ```{r}
@@ -123,7 +123,8 @@ combo_age_year <- age_2021_pop |>
 
 ### Sentence 3
 
-* **Sentence text**: [Paste in sentence to engineer here]
+* **Sentence text**: "An analysis by The Associated Press, Stanford University’s Big Local News project and Stanford education professor Thomas Dee found an estimated 230,000 students in 21 states whose absences could not be accounted for. These students didn’t move out of state, and they didn’t sign up for private school or home-school, according to publicly available data.”
+
 * **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
 
 ```{r}

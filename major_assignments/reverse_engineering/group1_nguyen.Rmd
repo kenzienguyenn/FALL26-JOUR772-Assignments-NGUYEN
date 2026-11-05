@@ -85,7 +85,7 @@ age_2020_pop <- age_pop |>
 # Filtering to match the states that the AP examined 
   filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12)) |> 
 # Calculating the total school-age population in April 2020 per state 
-  group_by(state) |> 
+  group_by(state, fips) |> 
   summarise(total_pop_2020 = sum(population))
 
 # Creating new dataset to focus on estimated school-age population in 2021 in the respective jurisdiction 
@@ -97,7 +97,7 @@ age_2021_pop <- age_pop |>
 # Filtering to match the states that the AP examined 
   filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12)) |> 
 # Calculating the total school-age population in July 2021 per state 
-  group_by(state) |> 
+  group_by(state, fips) |> 
   summarise(total_pop_2021 = sum(population))
 
 # Creating official dataset for sentence #1 analysis 
@@ -172,14 +172,76 @@ homeschool_enrollment <- enrollment_changes |>
 
 ### Sentence 5
 
-* **Sentence text**: [Paste in sentence to engineer here]
+* **Sentence text**: “States where kindergarten is optional were more likely to have larger numbers of unaccounted-for students, suggesting the missing also include many young learners kept home instead of starting school.”
+
 * **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
 
 ```{r}
-# Put code to reverse engineer sentence here
 
-# Display results of code below this codeblock
+private_2020_change <- private_enrollment |> 
+  filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12)) |> 
+  filter(str_detect(grade, "k_12_total")) |> 
+  filter(sch_year == "2019-2020") |> 
+  rename(year_one = "sch_year") |> 
+  rename(enroll_2020 = "private_enrollment")
 
+private_2022_change <- private_enrollment |> 
+  filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12)) |> 
+  filter(str_detect(grade, "k_12_total")) |> 
+  filter(sch_year == "2021-2022") |> 
+  rename(year_two = "sch_year") |> 
+  rename(enroll_2022 = "private_enrollment")
+
+pri_table <- private_2020_change |> 
+  left_join(private_2022_change, join_by(fips, grade, state_abbr)) |> 
+  mutate(total_pri_change = enroll_2022 - enroll_2020) |> 
+  select(fips, state_abbr, total_pri_change)
+
+
+homeschool_table <- enrollment_changes |> 
+  filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12)) |> 
+  filter(enrollment_type == "Homeschool enrollment") |>
+  rename(total_home_change = total_change) |>
+  rename(state_abbr = "state_abbrev") |>
+  select(fips, state_abbr, total_home_change) 
+
+
+public_2020_change <- public_enrollment |> 
+  filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12)) |> 
+  filter(str_detect(grade, "k_12_total")) |> 
+  filter(sch_year == "2019-2020") |> 
+  rename(year_one = "sch_year") |> 
+  rename(enroll_2020 = "public_enrollment")
+
+public_2022_change <- public_enrollment |> 
+  filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12)) |> 
+  filter(str_detect(grade, "k_12_total")) |> 
+  filter(sch_year == "2021-2022") |> 
+  rename(year_two = "sch_year") |> 
+  rename(enroll_2022 = "public_enrollment")
+
+pub_table <- public_2020_change |> 
+  left_join(public_2022_change, join_by(fips, grade, state_abbr)) |> 
+  mutate(total_pub_change = enroll_2022 - enroll_2020) |> 
+  select(fips, state_abbr, total_pub_change)
+
+age_group <- age_2021_pop |> 
+  left_join(age_2020_pop, join_by(state, fips)) |> 
+  mutate(difference = total_pop_2021 - total_pop_2020) |>
+  select(-total_pop_2021, -total_pop_2020)
+
+summary_file <- read_csv("data/missing_kids_summary.csv") |> 
+  clean_names() |> 
+  select(fips, kindergarten_required)
+
+missing_kids <- pri_table |> 
+  left_join(pub_table, join_by(fips, state_abbr)) |> 
+  left_join(homeschool_table, join_by(fips, state_abbr)) |> 
+  left_join(age_group, join_by(fips)) |>
+  left_join(summary_file, join_by(fips)) |>
+  select(-state) |> 
+  mutate(residual = (total_pri_change + total_pub_change + total_home_change) - difference)
+  
 ```
 
 -30-

@@ -131,7 +131,7 @@ census_api_key("4996c618e88479b2ba98a540452030312b27c3f4", install=TRUE, overwri
 acs5 <- load_variables(2022, "acs5", cache = TRUE)
 
 md_acs5 <-  get_acs(geography = "zcta",
-              variables = c(medincome = "B06011_001"),
+              variables = c(medincome = "B19013_001"),
               state = "MD",
               year = 2019) |> 
   rename(med_income = "estimate") |> 
@@ -149,14 +149,15 @@ calls_by_medincome <- calls_by_zip |>
   arrange(desc(total_calls))
 
 calls_by_medincome |>
-  ggplot() + 
-  geom_point(aes(x = factor(zipcode), y = med_income, color = total_calls), size = 3) + 
+  ggplot(aes(x = med_income, y = total_calls)) +
+  geom_point() + 
+  geom_text(aes(label = zipcode), check_overlap = TRUE, vjust = -0.7, size = 3) +
   theme_clean() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(
     title = "Overdose Calls by Zipcode and Median Income",
-    x = "zipcode)",
-    y = "median income",
+    x = "median household income",
+    y = "total calls",
     caption = "source: Prince George's County EMS and Census Bureau")
 
 ```

@@ -141,16 +141,13 @@ private_change <- private_20_change |>
   mutate(difference = enroll_2022 - enroll_2020) |> 
   summarise(total_change = sum(difference)) 
 
-
-# Calculated difference is: 102,847 (exact same as the AP stat)
-  
 ```
 
 ### Sentence 3
 
 * **Sentence text**: "In the 21 states where data was available, enrollment fell by about 700,000 students between the 2019-2020 and 2021-2022 school years." 
 
-* **Analysis summary**:  To find this change, we first created a filter from the available public school enrollment data, searching for the total enrollment in K-12 schools. The filter separated enrollment in the 2019-20 and 2021-22 academic years. We were then able to subtract the total enrollment we previously calculated from the sum of our public school enrollment data, and got 704,593, which is the number that the AP presented.
+* **Analysis summary**:  Our results confirmed the AP’s claim that enrollment fell by about 700,000 (actual amount is 704,593). To find this change, we first created a filter from the available public school enrollment data, searching for the total enrollment in K-12 schools. The filter separated enrollment in the 2019-20 and 2021-22 academic years. 
 
 ```{r}
 
@@ -176,8 +173,6 @@ public_change <- public_20_change |>
   mutate(difference = enroll_2022 - enroll_2020) |> 
   summarise(total_change = sum(difference)) 
 
-# Calculated difference is : -704,593 (exact same as the AP stat)
-
 ```
 
 ### Sentence 4
@@ -196,8 +191,6 @@ homeschool_enrollment <- enrollment_changes |>
   filter(enrollment_type == "Homeschool enrollment") |>
   select(fips, state_abbrev, total_change) |>
   summarise(total_enrollment = sum(total_change, na.rm = TRUE)) 
-
-# Calculated difference is : 184,047 (exact same as the AP stat) 
 
 # Calculated residual : (-704,593 + 102,847 + 184,047) - -183,486 = -234,213 (exact same stat for the AP number & shown in the code below)
 

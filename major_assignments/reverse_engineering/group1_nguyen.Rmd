@@ -119,26 +119,36 @@ combo_age_year <- age_2021_pop |>
 
 ```{r}
 
+# Created dataset that focuses on private school enrollment for the 2019-2020 academic year
 private_20_change <- private_enrollment |> 
+# Filtered out for the story's states, grades and 2019-2020 academi year 
   filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12)) |> 
   filter(str_detect(grade, "k_12_total")) |> 
   filter(sch_year == "2019-2020") |> 
+# Renamed columns for clarity purposes
   rename(sch_20_year = "sch_year") |>
   rename(enroll_2020 = "private_enrollment") |> 
+# Deselected grade column for clarity purposes
   select(-grade)
 
-private_22_change <- private_enrollment |> 
+# Created dataset that focuses on private school enrollment for the 2021-2022 academic year
+private_22_change <- private_enrollment |>
+# Filtered out for the story's states, grades and 2019-2020 academi year 
   filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12)) |> 
   filter(str_detect(grade, "k_12_total")) |> 
   filter(sch_year == "2021-2022") |> 
+# Renamed columns for clarity purposes
   rename(sch_22_year = "sch_year") |> 
   rename(enroll_2022 = "private_enrollment") |> 
+# Deselected grade column for clarity purposes
   select(-grade)
 
-
+# Merged tables together
 private_change <- private_20_change |> 
   left_join(private_22_change, join_by(fips, state_abbr)) |> 
+# Created new column to calculate the enrollment difference from the two academic years 
   mutate(difference = enroll_2022 - enroll_2020) |> 
+# Calculated to total the overall difference 
   summarise(total_change = sum(difference)) 
 
 ```
@@ -151,26 +161,36 @@ private_change <- private_20_change |>
 
 ```{r}
 
+# Created dataset that focuses on public school enrollment for the 2019-2020 academic year
 public_20_change <- public_enrollment |> 
+# Filtered out for the story's states, grades and 2019-2020 academi year 
   filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12)) |> 
   filter(str_detect(grade, "k_12_total")) |> 
   filter(sch_year == "2019-2020") |> 
+# Renamed columns for clarity purposes
   rename(sch_20_year = "sch_year") |>
   rename(enroll_2020 = "public_enrollment") |> 
+# Deselected grade column for clarity purposes
   select(-grade)
 
+# Created dataset that focuses on public school enrollment for the 2021-2022 academic year
 public_22_change <- public_enrollment |> 
+# Filtered out for the story's states, grades and 2021-2022 academi year 
   filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12)) |> 
   filter(str_detect(grade, "k_12_total")) |> 
   filter(sch_year == "2021-2022") |> 
+# Renamed columns for clarity purposes
   rename(sch_22_year = "sch_year") |> 
   rename(enroll_2022 = "public_enrollment") |> 
+# Deselected grade column for clarity purposes
   select(-grade)
 
-
+# Merged tables together
 public_change <- public_20_change |> 
   left_join(public_22_change, join_by(fips, state_abbr)) |> 
+# Created new column to calculate the enrollment difference from the two academic years 
   mutate(difference = enroll_2022 - enroll_2020) |> 
+# Calculated to total the overall difference 
   summarise(total_change = sum(difference)) 
 
 ```
@@ -183,13 +203,17 @@ public_change <- public_20_change |>
 
 ```{r}
 
+# Loaded a new data file & cleaned it 
 enrollment_changes <- read_csv("data/enrollment_changes.csv") |> 
   clean_names()
 
+# Created dataset that focuses on homeschool enrollment 
 homeschool_enrollment <- enrollment_changes |> 
+# Filtered out to focus on story's states, and so that the table only reflects hoomeschool enrollment
   filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12)) |> 
   filter(enrollment_type == "Homeschool enrollment") |>
   select(fips, state_abbrev, total_change) |>
+# Calculated to find the overall change of homeschool enrollment 
   summarise(total_enrollment = sum(total_change, na.rm = TRUE)) 
 
 # Calculated residual : (-704,593 + 102,847 + 184,047) - -183,486 = -234,213 (exact same stat for the AP number & shown in the code below)
@@ -204,11 +228,14 @@ homeschool_enrollment <- enrollment_changes |>
 
 ```{r}
 
+# Created a new table to merge later on 
 private_change <- private_20_change |> 
   left_join(private_22_change, join_by(fips, state_abbr)) |> 
+# Created a new column that finds the total enrollment change per state 
   mutate(total_pri_change = enroll_2022 - enroll_2020) |> 
   select(fips, state_abbr, total_pri_change)
 
+# Created a new table to merge later on 
 homeschool_table <- enrollment_changes |> 
   filter(fips %in% c(6, 36, 22, 37, 53, 8, 13, 27, 55, 33, 25, 30, 10, 38, 11, 46, 45, 31, 44, 47, 42, 12)) |> 
   filter(enrollment_type == "Homeschool enrollment") |>
@@ -216,32 +243,42 @@ homeschool_table <- enrollment_changes |>
   rename(state_abbr = "state_abbrev") |>
   select(fips, state_abbr, total_home_change) 
 
+# Created a new table to merge later on 
 public_change <- public_20_change |> 
   left_join(public_22_change, join_by(fips, state_abbr)) |> 
+# Created a new column that finds the total enrollment change per state 
   mutate(total_pub_change = enroll_2022 - enroll_2020) |> 
   select(fips, state_abbr, total_pub_change)
 
-
+# Created a new table to merge later on 
 age_group <- age_2021_pop |> 
   left_join(age_2020_pop, join_by(state, fips)) |> 
+# Created a new column that finds the total population change per state 
   mutate(difference = total_pop_2021 - total_pop_2020) |>
   select(-total_pop_2021, -total_pop_2020)
 
+# Loaded a new table to add later on 
 summary_file <- read_csv("data/missing_kids_summary.csv") |> 
   clean_names() |> 
+# Mutated the NA in Massachusetts to "No" after doing research and finding that kindergarten isn't required 
   mutate(kindergarten_required = if_else(state_abbrev == "MA", "No", kindergarten_required)) |> 
   select(fips, kindergarten_required)
 
+# Remade summary file table by joining all the tables above 
 missing_kids_total <- private_change |> 
   left_join(public_change, join_by(fips, state_abbr)) |> 
   left_join(homeschool_table, join_by(fips, state_abbr)) |> 
   left_join(age_group, join_by(fips)) |>
   left_join(summary_file, join_by(fips)) |>
+# Mutated to find the overall totals of the private enrollment, public enrollment, homeschool enrollment and population difference columns 
   mutate(sum_pri = sum(total_pri_change), sum_pub = sum(total_pub_change), sum_home = sum(total_home_change), sum_diff = sum(difference)) |>
+# Added a row to include the findings from the mutated columns above as a row of the dataset 
   add_row(total_pri_change = 102847, total_pub_change = -704593, total_home_change = 184047, difference = -183486) |> 
+# Created a new column to create the residual column in the summary file 
   mutate(residual = (total_pri_change + total_pub_change + total_home_change) - difference) |> 
   select(-sum_pri, -sum_pub, -sum_home, -sum_diff, -state)
 
+# Created a new table to make the bar chart below to make a second confirmation that the AP sentence is true 
 missing_kids <- private_change |> 
   left_join(public_change, join_by(fips, state_abbr)) |> 
   left_join(homeschool_table, join_by(fips, state_abbr)) |> 
@@ -250,6 +287,7 @@ missing_kids <- private_change |>
   select(-state) |> 
   mutate(residual = (total_pri_change + total_pub_change + total_home_change) - difference)
 
+# Created a bar chart to make a second confirmation that the AP sentence is true 
 missing_kids |>
   ggplot() +
   geom_bar(aes(x=reorder(kindergarten_required,residual), weight=residual)) +

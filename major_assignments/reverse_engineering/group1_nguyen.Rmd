@@ -72,7 +72,7 @@ In this notebook, we are reverse engineering five sentences from the story.
 
 * **Sentence text**: “The population of school-age kids in the states we studied fell by about 183,000, according to census estimates.” 
 
-* **Analysis summary**: Our results confirmed the AP's claim stating that the population of school-age kids in the 22 states studied fell by about 183,000. We found this number by finding the difference between the provided age and population data from July 2020 to the age and population data we have from July 2021.
+* **Analysis summary**: Our results confirmed the AP's claim stating that the population of school-age kids in the 22 states studied fell by about 183,000. We found this number by finding the difference between the provided age and population data from April 2020 to the age and population data we have from July 2021.
 
 ```{r}
 
